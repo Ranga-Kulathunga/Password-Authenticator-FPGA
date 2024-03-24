@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 module tb();
-    parameter half_cycle=10;
+    parameter half_cycle=5;
     parameter period = 30;
     
     reg clk, rst, T, D, L, R;
@@ -25,7 +25,7 @@ module tb();
         
     initial begin
     
-        // correct pattern
+        // TEST 1: correct pattern
         #50 rst=1;
         #50 rst=0;
         
@@ -41,7 +41,7 @@ module tb();
         #period R=1;
         #period R=0;
         
-        // incorrect pattern
+        // TEST 2: incorrect pattern
         #100 rst=1;
         #50 rst=0;
         
@@ -56,7 +56,39 @@ module tb();
         
         #period R=1;
         #period R=0;
+
+        // TEST 3: pattern within 30 cycles
+        #50 rst=1;
+        #50 rst=0;
         
-        #200 $finish;
+        #period T=1;
+        #period T=0;
+        
+        #period L=1;
+        #period L=0;
+        
+        #period L=1;
+        #period L=0;
+        
+        #period R=1;
+        #period R=0;
+
+        // TEST 4: delayed pattern
+        #100 rst=1;
+        #50 rst=0;
+        
+        #period T=1;
+        #period T=0;
+        
+        #100 L=1;
+        #period L=0;
+        
+        #200 L=1;
+        #period L=0;
+        
+        #period R=1;
+        #period R=0;
+        
+        #500 $finish;
     end
 endmodule

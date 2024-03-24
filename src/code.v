@@ -25,6 +25,12 @@ module code(
   reg   [3:0]     n_state ;
   reg   [6:0]     SSG_D   ;
   
+  parameter max_clk_count = 6'b011110;
+  reg [5:0] clk_count;
+  wire time_out;
+  
+  assign time_out = (clk_count == max_clk_count && c_state != ST4)? 1'b1 : 1'b0;
+  
   wire T_pressed, D_pressed, L_pressed, R_pressed;
   wire T_EN, D_EN, L_EN, R_EN, ANY_EN; 
 
@@ -98,10 +104,21 @@ module code(
   end
   
   always@(posedge clk or posedge rst)begin
-  if(rst)
+  if(rst)begin
       c_state <=  IDLE    ;
-  else
-      c_state <=  n_state ;
+      clk_count <= 6'b000000;
+  end
+  else begin
+   if (time_out==1'b1)begin
+    c_state <= E4;
+   end
+   else if (c_state == ST4)
+    c_state <= n_state;
+   else begin
+    clk_count <= clk_count + 1;
+    c_state <= n_state;
+   end
+   end
   end
 
   always@(*)begin
